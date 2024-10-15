@@ -1,4 +1,4 @@
-public class Person
+public class Person implements Comparable
 {
 	/***** TODO: (Part 2) create helper inner class for Identity*****/
 
@@ -81,5 +81,22 @@ public class Person
 	}
 
 	// INTERFACE METHODS
-	/***** TODO: (Part 1) override compareTo method to implement Comparable interface*****/
+	/***** TODO: (Part 1) To method to implement Comparable interface*****/
+	@Override
+	public int compareTo(Object other) {
+		if (other == null || (!(other instanceof Person))) {
+			throw new IllegalArgumentException("null given to compareTo method in person or not a person type");
+		}
+		
+		Person otherPerson = (Person) other;
+
+		if (this.privilege > otherPerson.privilege) {
+			return 1;
+		} else if (this.privilege == otherPerson.privilege) {
+			return 0;
+		} else {
+			return -1;
+		}
+
+	}
 }

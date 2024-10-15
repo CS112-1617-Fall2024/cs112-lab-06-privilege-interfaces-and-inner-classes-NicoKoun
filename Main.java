@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.jar.Attributes.Name;
 
 public class Main
 {
@@ -34,38 +35,38 @@ public class Main
 	public static void main(String[] args)
 	{
 		// DECLARATION + INITIALIZATION
-		Person p1 = new Person("Amira", "I am a Syrian refugee.", 40);
-		Person p2 = new Person("D'Andra", "I am an African-American trans woman.", -20);
-		Person p3 = new Person("Jennifer", "I am a New Yorker", 140);
-		Person p4 = new Person("Pete", "I am a guy from Pennsylvania", 200);
+		Person p1 = new Person("Amira", "she/her/hers", "I am a Syrian refugee.", 40);
+		Person p2 = new Person("D'Andra", "she/her/hers", "I am an African-American trans woman.", -20);
+		Person p3 = new Person("Jennifer", "ze/hir/hirs","I am a New Yorker", 140);
+		Person p4 = new Person("Pete", "he/him/his", "I am a guy from Pennsylvania", 200);
 		Person self = new Person();
-		Person[] people = {p1, p2, p3, p4, self};
+		Person[] people = { p1, p2, p3, p4, self };
 		boolean done = false;
 		int input;
-		
+
 		// WELCOME + INTRO
 		System.out.println("Welcome to the Privilege Calculator.\n\n"
 				+ "This is a small exercise that gives us a glimpse at how "
 				+ "fortunate we have been in life.\n");
 
 		Main.fillInfo(self);
-		
+
 		// INPUT + CALCULATION + OUTPUT
-		do{
+		do {
 			System.out.println("\n~~~Main Menu~~~\n");
 			System.out.println("1. Take questionnaire to calculate privilege estimate.");
-			System.out.println("2. Check my estimate. (Defaults to " + Person.DEFAULT_PRIVILEGE + " if questionnaire has not been taken.)");
+			System.out.println("2. Check my estimate. (Defaults to " + Person.DEFAULT_PRIVILEGE
+					+ " if questionnaire has not been taken.)");
 			System.out.println("3. Compare my estimate with others'.");
 			System.out.println("4. Exit program.");
 			System.out.print("What would you like to do?\nEnter choice: ");
-			
+
 			input = keyboard.nextInt();
 			System.out.println();
 
-			switch(input)
-			{
+			switch (input) {
 				case 1:
-					self.setPrivilege( Main.doPrivilegeQuestionnaire() );
+					self.setPrivilege(Main.doPrivilegeQuestionnaire());
 					System.out.println("Your privilege estimate is: " + self.getPrivilege());
 					System.out.println("\nReturning to main menu...\n");
 					break;
@@ -74,7 +75,7 @@ public class Main
 					break;
 				case 3:
 					/***** TODO: (Part 1) implement a comparison case using the comparable method on the Person class to compare self to p1-p4*****/
-					
+					comparePeople(people);
 					System.out.println("\nReturning to main menu.\n");
 					break;
 				case 4:
@@ -85,29 +86,95 @@ public class Main
 				default:
 					System.out.println("Invalid input, please enter a valid choice."
 							+ "\nReturning to main menu...\n");
-					break;				
+					break;
 			}
-		}while(!done);
+		} while (!done);
 
 		System.out.println("Thank you for exploring your privilege, it can be uncomfortable but it's a crucial step" +
-			"in our own growth and self-reflection. We appreciate you taking that journey with us! :D");
+				"in our own growth and self-reflection. We appreciate you taking that journey with us! :D");
+	}
+	
+	public static void comparePeople(Person[] group) {
+		Person user = group[group.length - 1];
+		int compare;
+		printRuler();
+		for (Person p : group)
+			printPrivilegebar(p);
+
+		System.out.println("\nSummary of privilege estimate:");
+		for (int i = 0; i < group.length - 1; i++) {
+			compare = user.compareTo(group[i]);
+			if (compare > 0) {
+				System.out.println("More privilege than " + group[i].getName());
+			} else if (compare == 0) {
+				System.out.println("Same privilege as " + group[i].getName());
+			} else {
+				System.out.println("Less privilege as " + group[i].getName());
+			}
+		}
 	}
 
-	/***** TODO: (Part 2) upgrade method to ask user for pronouns and background info *****/
+	public static void printRuler() {
+		int total = LEFT_WIDTH + 1 + RIGHT_WIDTH;
+		System.out.printf("%-" + NAME_WIDTH + "s%-" + LEFT_WIDTH + "d0%" + RIGHT_WIDTH + "d%n", "", MIN, MAX);
+		System.out.printf("%-" + NAME_WIDTH + "s", "");
+		for (int i = 0; i < total; i++) {
+			System.out.print("-");
+		}
+		System.out.println();
+		System.out.printf("%-" + NAME_WIDTH + "s%-" + LEFT_WIDTH + "s%1s%" + RIGHT_WIDTH + "s%n", "NAME (ESTIMATE):", "|", "|", "|");
+	}
+
+	public static void printPrivilegebar(Person p){
+		//System.out.printf("%s (%d) %s%n", p.getName(), p.getPrivilege(), p.getName().charAt(0));
+		int privilegeEstimate = p.getPrivilege(), position = Math.abs(privilegeEstimate) / 10;
+		char marker = p.getName().charAt(0);
+		String label = p.getName() + " (" + privilegeEstimate + ")";
+		System.out.printf("%-" + NAME_WIDTH + "s", label);
+		if (privilegeEstimate < 0) {
+			if ((LEFT_WIDTH - position) == 0) {
+				System.out.printf("%-" + LEFT_WIDTH + "s", marker);
+			} else {
+				System.out.printf("%" + (LEFT_WIDTH-position) + "s%-" + position + "s", "", marker);
+			}
+		} else {
+			System.out.printf("%" + LEFT_WIDTH + "s", "");
+		}
+		if (privilegeEstimate == 0) {
+			System.out.print(marker);
+		} else {
+			System.out.print(" ");
+		}
+		if (privilegeEstimate > 0) {
+			if ((RIGHT_WIDTH - position) == 0) {
+				System.out.printf("%-" + RIGHT_WIDTH + "s", marker);
+			} else {
+				System.out.printf("%" + position + "s%-" + (RIGHT_WIDTH-position) + "s", marker, "");
+			}
+		} else {
+			System.out.printf("%" + RIGHT_WIDTH + "s", "");
+		}
+		System.out.println();
+}	
+
+	/*** TODO: (Part 2) upgrade method to ask user for pronouns and background info ***/
 	public static void fillInfo(Person person){
 		//sets default privilege prior to questionnaire to 100
-		String name, story;
+		String name, pronouns, background;
 		
 		System.out.println("What is your name? ");
 		name = keyboard.nextLine();
-		System.out.println("\nHello " + name + ", write a small self-identifying statement about yourself "
+		System.out.println("\nHello " + name + "!");
+		System.out.println("Here is a list of common examples of perferred pronouns: \nGender Neutral/Nonbinary: they/them/theirs or ze/hir/hirs\nFeminine: she/her/hers\nMasculine: he/him/his");
+		pronouns = keyboard.nextLine();
+		System.out.println("Please share a small self-identifying statement about yourself "
 				+ "and your background and identity, this can be anything you like!\n"
 				+ "For example: I'm a [nationality / place of origin / ethnicity / sexuality / gender expression / etc.]...");
-		System.out.println("Tell us about yourself: ");
-		story = keyboard.nextLine();
+		background = keyboard.nextLine();
 		
 		person.setName(name);
-		person.setStory(story);
+		person.setPronouns(pronouns);
+		person.setBackground(background);
 	}
 
 	public static int doPrivilegeQuestionnaire() {
